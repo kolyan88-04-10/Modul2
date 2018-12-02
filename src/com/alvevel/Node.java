@@ -54,4 +54,17 @@ public class Node {
                 ", weight=" + weight +
                 '}';
     }
+
+    public Node next(Bit bit) {
+        if (bit == Bit.ZERO && left != null) {
+            return left;
+        } else if (bit == Bit.ONE && right != null) {
+            return right;
+        }
+        return null;
+    }
+
+    public boolean hasNext() {
+        return left != null || right != null;
+    }
 }
