@@ -2,33 +2,36 @@ package com.alvevel;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import java.util.Map;
-
 public class Decompressor {
+
+    private Decompressor() {}
+
     public static void main(String[] args) {
-        decompress("compressedFile.hcf", "compressedFile.ht", "result.txt");
+        decompress("readme.hcf", "readme.ht", "readmeUnpack.txt");
     }
 
     public static void decompress(String compressedFileName, String fileTreeName, String destinationFileName) {
         Path compressedFile = Paths.get(compressedFileName);
-        Path fileTable = Paths.get(compressedFileName);
+        Path fileTree = Paths.get(fileTreeName);
         if (!Files.exists(compressedFile)) {
             System.out.println("Compressed file is not exists");
         } else if (!Files.isRegularFile(compressedFile)) {
             System.out.println("Compressed file is not a regular file");
-        } else if (!Files.exists(fileTable)) {
+        } else if (!Files.exists(fileTree)) {
             System.out.println("FileTable file is not exists");
-        } else if (!Files.isRegularFile(fileTable)) {
+        } else if (!Files.isRegularFile(fileTree)) {
             System.out.println("FileTable file is not a regular file");
         } else {
-            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(compressedFile))){
+            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(compressedFile));
+                 ObjectInputStream objectInputStream = new ObjectInputStream(Files.newInputStream(fileTree))){
                 int bitLength = getBitLength(in);
-                Node tree = getTree(fileTreeName);
+                Node tree = (Node) objectInputStream.readObject();
                 String stringPresentationCompression = buildStringPresentationCompression(in, bitLength);
                 DecopressionResultBuilder builder = new DecopressionResultBuilder(tree, destinationFileName);
                 for (int i = 0; i < stringPresentationCompression.length(); i++) {
@@ -36,15 +39,11 @@ public class Decompressor {
                 }
                 DecompressionResult decompressionResult = builder.build();
                 decompressionResult.writeToFile();
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
-    }
-
-    private static Node getTree(String fileTreeName) {
-        return null;
     }
 
     private static int getBitLength(BufferedInputStream in) throws IOException {
@@ -58,11 +57,41 @@ public class Decompressor {
 
     private static String buildStringPresentationCompression(BufferedInputStream in, int bitLength) throws IOException {
         StringBuilder sb = new StringBuilder();
-        int position = 0;
-        while (in.available() > 0) {
-            int oneByte = in.read();
-
+        int wholeByteNumber = bitLength / 8;
+        int oneByte;
+        for (int i = 0; i < wholeByteNumber; i++) {
+            oneByte = in.read() & 0xFF;
+            writeBits(oneByte, sb);
         }
-        return null;
+        int remainder = bitLength % 8;
+        if (remainder != 0) {
+            oneByte = in.read() & 0xFF;
+            oneByte >>= 8 - remainder;
+            for (int i = 7; i >= 8 - remainder; i--) {
+                sb.append(getBit(oneByte, i));
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * writes bit representation of number to StingBuilder
+     * @param oneByte
+     * @param sb
+     */
+    private static void writeBits(int oneByte, StringBuilder sb) {
+        for (int i = 7; i >= 0; i-- ) {
+            sb.append(getBit(oneByte, i));
+        }
+    }
+
+    /**
+     * returns bit in special position in int number
+     * @param n
+     * @param k
+     * @return
+     */
+    private static int getBit(int n, int k) {
+        return (n >> k) & 1;
     }
 }

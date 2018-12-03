@@ -3,13 +3,11 @@ package com.alvevel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class CompressionResultBuilder {
     private String fileName;
-    private Map<Integer, String> huffmanTable;
+    private Node huffmanTree;
     private List<Integer> compressionBytes = new ArrayList<>();
-    private CompressionResult compressionResult;
     private int oneByte;
     private int position;
 
@@ -20,11 +18,8 @@ public class CompressionResultBuilder {
         return this;
     }
 
-    public static void main(String[] args) {
-    }
-
-    public void setHuffmanTable(Map<Integer, String> huffmanTable) {
-        this.huffmanTable = huffmanTable;
+    public void setHuffmanTree(Node huffmanTree) {
+        this.huffmanTree = huffmanTree;
     }
 
     public CompressionResultBuilder addBit(Bit bit) {
@@ -39,14 +34,6 @@ public class CompressionResultBuilder {
         return this;
     }
 
-    public Bit getBit(int source, int digit) {
-        return null;
-    }
-
-    public int writeBit(int source, int digit) {
-        return 0;
-    }
-
     public CompressionResult build() throws IOException {
         int remainder = position % 8;
         if (remainder != 0) {
@@ -55,6 +42,6 @@ public class CompressionResultBuilder {
         compressionBytes.add(oneByte);
         return new CompressionResult(
                 compressionBytes, position,
-                fileName, huffmanTable);
+                fileName, huffmanTree);
     }
 }

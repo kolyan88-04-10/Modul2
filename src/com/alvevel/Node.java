@@ -1,6 +1,8 @@
 package com.alvevel;
 
-public class Node {
+import java.io.Serializable;
+
+public class Node implements Serializable {
     private Node left;
     private Node right;
     private int value;
@@ -35,10 +37,6 @@ public class Node {
 
     public int getValue() {
         return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
     }
 
     public  int getWeight() {
