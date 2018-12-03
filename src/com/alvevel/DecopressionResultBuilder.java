@@ -3,7 +3,7 @@ package com.alvevel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DecopressionResultBuilder {
+public class DecopressionResultBuilder implements Builder {
     private Node root;
     private Node current;
     private String fileName;
@@ -14,6 +14,8 @@ public class DecopressionResultBuilder {
         this.fileName = fileName;
         current = root;
     }
+
+
 
     public DecopressionResultBuilder addBit(Bit bit) {
         Node nextNode = current.next(bit);
@@ -26,7 +28,7 @@ public class DecopressionResultBuilder {
         return this;
     }
 
-    public DecompressionResult build() {
+    public Result build() {
         return new DecompressionResult(bytes, fileName);
     }
 }

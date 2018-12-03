@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class CompressionResult {
+public class CompressionResult implements Result {
     private final List<Integer> bites;
     private Node huffmanTree;
     private int bitLength;
@@ -24,11 +24,11 @@ public class CompressionResult {
         this.huffmanTree = huffmanTree;
     }
 
-    public static CompressionResultBuilder newBuilder(){
-        return new CompressionResultBuilder();
-    }
-
-
+    /**
+     * Writes to file with ext .hcf compression  content
+     * and to file with .ht node tree
+     * @throws IOException
+     */
     public void writeToFile() throws IOException {
         Path compressedFile = Paths.get(fileName + ".hcf");
         Path tree = Paths.get(fileName + ".ht");

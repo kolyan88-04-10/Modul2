@@ -37,7 +37,7 @@ public class Compressor {
                 for (int i = 0; i < stringPresentationCompression.length(); i++) {
                     builder.addBit(Bit.getBit(stringPresentationCompression.charAt(i)));
                 }
-                CompressionResult compressionResult = builder.build();
+                Result compressionResult = builder.build();
                 compressionResult.writeToFile();
 
             } catch (IOException e) {
@@ -46,6 +46,13 @@ public class Compressor {
         }
     }
 
+    /**
+     * Method to build string representation of bits in compressed file
+     * @param stream
+     * @param huffmanTable
+     * @return
+     * @throws IOException
+     */
     private static String buildStringPresentationCompression(
             BufferedInputStream stream, Map<Integer, String> huffmanTable) throws IOException {
         StringBuilder builder = new StringBuilder();
@@ -59,16 +66,16 @@ public class Compressor {
     private static Map<Integer, String> buildTable(Node tree) {
         Map<Integer, String> huffmanTable = new HashMap<>();
         StringBuilder stringBuilder = new StringBuilder();
-        Node left = tree.getLeft();
-        stringBuilder.append(0);
-        getEntry(left, huffmanTable, stringBuilder);
-        stringBuilder.setLength(0);
-        stringBuilder.append(1);
-        Node right = tree.getRight();
-        getEntry(right, huffmanTable, stringBuilder);
+        getEntry(tree, huffmanTable, stringBuilder);
         return huffmanTable;
     }
 
+    /**
+     * Method to get entries to write in huffman table
+     * @param node
+     * @param huffmanTable
+     * @param stringBuilder
+     */
     private static void getEntry(Node node, Map<Integer, String> huffmanTable,
                                  StringBuilder stringBuilder) {
         Node left = node.getLeft();
@@ -85,6 +92,8 @@ public class Compressor {
                 stringBuilder.append(1);
                 getEntry(right, huffmanTable, stringBuilder);
             }
+            stringBuilder.setLength(stringBuilder.length() > 1
+                    ? stringBuilder.length() - 1 : 0);
         }
     }
 

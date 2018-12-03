@@ -1,17 +1,16 @@
 package com.alvevel;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompressionResultBuilder {
+public class CompressionResultBuilder implements Builder {
     private String fileName;
     private Node huffmanTree;
     private List<Integer> compressionBytes = new ArrayList<>();
     private int oneByte;
     private int position;
 
-    CompressionResultBuilder() {}
+    public CompressionResultBuilder() {}
 
     public CompressionResultBuilder setFileName(String fileName) {
         this.fileName = fileName;
@@ -34,7 +33,7 @@ public class CompressionResultBuilder {
         return this;
     }
 
-    public CompressionResult build() throws IOException {
+    public Result build() {
         int remainder = position % 8;
         if (remainder != 0) {
             oneByte <<= (8 - remainder);

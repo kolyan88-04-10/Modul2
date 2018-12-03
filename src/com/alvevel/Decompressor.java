@@ -37,7 +37,7 @@ public class Decompressor {
                 for (int i = 0; i < stringPresentationCompression.length(); i++) {
                     builder.addBit(Bit.getBit(stringPresentationCompression.charAt(i)));
                 }
-                DecompressionResult decompressionResult = builder.build();
+                Result decompressionResult = builder.build();
                 decompressionResult.writeToFile();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -46,6 +46,13 @@ public class Decompressor {
 
     }
 
+    /**
+     * Method to get first four bytes in file where
+     * recorded
+     * @param in
+     * @return
+     * @throws IOException
+     */
     private static int getBitLength(BufferedInputStream in) throws IOException {
         byte[] buff = new byte[4];
         for (int i = 0; i < 4; i++) {
@@ -55,7 +62,11 @@ public class Decompressor {
         return bb.getInt();
     }
 
-    private static String buildStringPresentationCompression(BufferedInputStream in, int bitLength) throws IOException {
+
+    /**
+     * Method to build string representation of bits in compressed file
+     * @throws IOException
+     */private static String buildStringPresentationCompression(BufferedInputStream in, int bitLength) throws IOException {
         StringBuilder sb = new StringBuilder();
         int wholeByteNumber = bitLength / 8;
         int oneByte;

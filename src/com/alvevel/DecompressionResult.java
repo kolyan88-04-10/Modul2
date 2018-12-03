@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class DecompressionResult {
+public class DecompressionResult implements Result {
     private final List<Integer> bites;
     private final String decompressedFileName;
 
